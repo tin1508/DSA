@@ -3,6 +3,7 @@
 
 #define MAX 1001
 
+// chèn kí tự sau mỗi kí tự là kí tự liền kế kí tự đó
 void Insertion(char str[], int index){
     for(int i = strlen(str); i > index + 1; i--){
         str[i] = str[i - 1];
@@ -10,7 +11,9 @@ void Insertion(char str[], int index){
     str[index + 1] = str[index] + 1;
     str[strlen(str) + 1] = '\0';
 }
-
+/* hàm chèn sau mỗi kí tự trong mã độc với chỉ số 
+bắt đầu và kết thúc của mã độc trong chuỗi
+*/
 void insertAfterCharOfSubStr(char str[], int begin, int end){
     while(end >= begin){
         Insertion(str, end);

@@ -3,6 +3,7 @@
 
 #define MAX 1001
 
+// hàm để xóa mã độc trong chuỗi
 void deleteSubStr(char str[], int begin, int end){
     for(int i = end + 1; i < strlen(str); i++){
         str[begin] = str[i];

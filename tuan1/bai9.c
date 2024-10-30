@@ -2,7 +2,10 @@
 
 #define MAX 1000
 
-int size = 0, indexArr[MAX];
+// mảng index dùng để lưu các chỉ số xuất hiện của các cặp tọa độ
+// size dùng để lưu kích thước của mảng chỉ số
+int size = 0, indexArr[MAX]; 
+// hàm tìm ra chỉ số để xóa cặp tọa độ
 void FindIndexToDelete(float a[][2], int n, float x1, float y1){
     for(int i = 0; i < n; i++){
         if(a[i][0] == x1 && a[i][1] == y1){
@@ -11,6 +14,7 @@ void FindIndexToDelete(float a[][2], int n, float x1, float y1){
         }
     }
 }
+// hàm delete cặp tọa độ
 void deletePairElement(float a[][2], int *n, int index){
     for(int i = index; i < *n; i++){
         a[i][0] = a[i + 1][0];

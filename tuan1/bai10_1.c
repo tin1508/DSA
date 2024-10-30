@@ -13,6 +13,7 @@ void findSubStr(char str[], char subStr[]){
     int i = 0;
     while(i < strlen(str)){
         if(str[i] == subStr[j]){
+            // khởi tạo biến init làm mốc để lưu vị trí bắt đầu của mã độc trong chuỗi
             int init = i;
             while(str[i] == subStr[j]){
                 i++; j++;

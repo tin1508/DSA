@@ -9,11 +9,13 @@ int main(){
         scanf("%f", &arr[i]);
     }
     int m; scanf("%d", &m);
-    double distance = (double) abs(arr[0] - m);
-    double result = arr[0];
-    int index = 0;
+    // tính khoảng cách từ số đầu tiên trước với số đã cho
+    double distance = (double) abs(arr[0] - m); 
+    double result = arr[0]; // dùng để lưu kết quả 
+    int index = 0; // dùng để lưu chỉ số của kết quả tìm được
     for(int i = 1; i < n; i++){
-        double temp = (double) abs(arr[i] - m);
+        // tính khoảng cách từ số thứ 2 với số đã cho và so sánh với distance
+        double temp = (double) abs(arr[i] - m); 
         if(distance > temp){
             distance = temp;
             result = arr[i];

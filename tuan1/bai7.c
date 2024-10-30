@@ -28,9 +28,10 @@ int compareStr(char s1[size_str], char s2[size_str]){
 }
 void InsertStr(char str[][size_str], int *n, int m, char s[][size_str]){
     for(int i = 0; i < m; i++){
+        // kiểm tra xem chuỗi cần chèn có thứ tự có lớn hơn chuỗi cuối cùng trong mảng không
         if(compareStr(s[i], str[*n - 1])){
             (*n)++;
-            strcpy(str[*n - 1], s[i]);
+            strcpy(str[*n - 1], s[i]); 
         }
         else{
             for(int j = 0; j < *n; j++){

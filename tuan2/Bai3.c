@@ -15,14 +15,10 @@ int binarySearch(char str[]){
     }
     else{
         int l = 0, r = strlen(str) - 1;
-        while(l < r){
+        while(l <= r){
             int m = (l + r) / 2;
-            if(str[m] - 'a' > m){
-                r = m - 1;
-            }
-            else if(str[m] - 'a' == m){
-                l = m + 1;
-            }
+            if(str[m] - 'a' == m) l = m + 1;
+            else if(str[m] - 'a' > m) r = m - 1;
             else return -1;
         }
         return l; // vị trí cần chèn kí tự thiếu
@@ -43,3 +39,7 @@ int main(){
     printf("%s", str);
     return 0;
 }
+/*
+Em dùng binarySearch để giải bài này. Theo em thấy binarySearch 
+phù hợp với vấn đề vì nó sẽ ít bước giải hơn là tìm kiếm tuyến tính.
+*/

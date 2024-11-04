@@ -2,6 +2,7 @@
 
 // bài tập trên lớp 1, 2, 3 với kiểu dữ liệu số thực
 // bài 1
+
 /*
 void insertion(float arr[], int *n, int index, float value){
     if(index == *n - 1){
@@ -69,6 +70,7 @@ int main(){
 */
 
 // bài 3
+
 
 int binarySearch(float arr[], int n, float value){
     int l = 0, r = n - 1;

@@ -3,7 +3,7 @@
 
 #define MAX 10000
 
-//Implement stack in C
+//Implement stack 
 
 typedef struct Stack_type
 {
@@ -78,7 +78,8 @@ void main() {
         displayStack(&s);
         i++;
         printf("\n");
-     }
+    }
+    return 0;
 }
 
 

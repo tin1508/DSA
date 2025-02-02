@@ -77,13 +77,6 @@ int CheckValidParenthesis(char str[], int ErrorIndex[], int *n){
             }
         }
     }
-    //nếu stack vẫn chưa empty tức là vẫn còn dấu ngoặc trong đó
-    //phép tính vẫn còn bị thiếu hay dư dấu ngoặc
-    //Th ví dụ là: [[3 + 5] + (6 + 8) 
-    if(isEmpty(&parenthesis) == 0){
-        pop(&parenthesis);
-        check = 0;
-    }
     return check;
 }
 int main(){

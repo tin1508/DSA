@@ -1,41 +1,70 @@
 #include <stdio.h>
-#include <time.h>
 #include <stdlib.h>
-#include <math.h>
 
-int isPrime(int a, int *comps){
-    if(a < 2) return 0;
-    *comps = 0;
-    for(int i = 2; i <= sqrt(a); i++){
-        (*comps)++;
-        if(a % i == 0){
-            return 0;
+void swap(int *a, int *b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void SelectionSort(int arr[], int n) {
+    for (int i = 0; i < n-1; i++) {
+        int minPos = i;
+        for (int j = i + 1; j < n; j++) {
+            if (arr[j] < arr[minPos]) {
+                minPos = j;
+            }
+        }
+        if(minPos != i){
+            swap(&arr[i], &arr[minPos]);
         }
     }
-    return 1;
 }
-int main(){
-    time_t t;
-    srand((unsigned)time(&t));
-    int min = 1, max = 10000;
-    int a, comps;
-    double  AverageComps[1001];
-    int CompsQuant[1001], aQuant[1001];
-    double average = 0;
-    for(int i = 1; i <= 1000; i++){
-        a = min + rand() % (max - min + 1);
-        int check = isPrime(a, &comps);
-        AverageComps[i] = (double) comps / a;
-        average += AverageComps[i];
-        CompsQuant[i] = comps;
-        aQuant[i] = a;
+
+int minTime(int times[], int N, int K) {
+    SelectionSort(times, N);
+    if (N <= K) {
+        int maxTime = 0;
+        for (int i = 0; i < N; i++) {
+            if (times[i] > maxTime) {
+                maxTime = times[i];
+            }
+        }
+        return maxTime;
     }
-    printf("Pass-through \t Comparisons \t a \t Average\n");
-    for(int i = 1; i <= 1000; i++){
-        printf("%d \t\t %d \t\t %d \t\t %.2f\n", i, CompsQuant[i], aQuant[i], AverageComps[i]);
+
+    int total_time = 0;
+    int current_index = N - 1;
+
+    while (current_index >= 3) {
+        int option1 = times[1] + times[0] + times[current_index] + times[1];
+        int option2 = times[current_index] + times[current_index - 1] + 2 * times[0];
+        if (option1 < option2) {
+            total_time += option1;
+        } else {
+            total_time += option2;
+        }
+        current_index -= 2;
     }
-    //tổng kết thuật toán
-    average /= (double) 1000;
-    printf("Final Conclusion: Average is %.2f\n", average);
+
+    if (current_index == 2) {
+        total_time += times[2] + times[1] + times[0];
+    } else if (current_index == 1) {
+        total_time += times[1];
+    } else {
+        total_time += times[0];
+    }
+
+    return total_time;
+}
+
+int main() {
+    int k, n; scanf("%d %d", &k, &n);
+    int arr[1000];
+    for(int i = 0; i < n; i++){
+        scanf("%d", &arr[i]);
+    }
+    int shortestTime = minTime(arr, n, k);
+    printf("%d", shortestTime);
     return 0;
 }

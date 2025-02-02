@@ -3,7 +3,7 @@
 
 #define MAX 5
 
-//Implement queue in C
+//Implement queue
 typedef struct Queue_type{
     int head, tail;
     int a[MAX];

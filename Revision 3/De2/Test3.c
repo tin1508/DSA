@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #include <math.h>
 
 typedef struct NodeType {
@@ -22,6 +23,13 @@ TreeNode* makeNode(int data){
 void init(BinaryTree* tree) {
     tree->root=NULL;
 }
+//in cây theo thứ tự duyệt trước - preorder (root - left - right) (DFS)
+void printTreePreorder(TreeNode* node) {
+    if(node == NULL) return;
+    printf("%d ", node->data);
+    printTreePreorder(node->left);
+    printTreePreorder(node->right);
+}
 //Hàm tính chiều cao của cây
 int heightOfTree(TreeNode *root){
     if(root == NULL) return -1;
@@ -32,24 +40,26 @@ int heightOfTree(TreeNode *root){
         else return (rheight + 1);
     }
 }
-//hàm chèn 1 node mới vào cây
-void insert(BinaryTree *tree, int value){
-    TreeNode *newNode = makeNode(value);
-    if(tree->root == NULL){
-        tree->root = newNode;
-    }
-    else{
-        TreeNode *parent = NULL, *curr = tree->root;
-        while(curr != NULL){
-            parent = curr;
-            if(value > parent->data) curr = curr->right;
-            else curr = curr->left;
+void sumOfRootToLeaf(TreeNode *node, int sum, int len, int *maxLen, int *maxSum){
+    if(node == NULL){
+        if(len > *maxLen){
+            *maxLen = len;
+            *maxSum = sum;
         }
-        if(parent->data > value) parent->left = newNode;
-        else parent->right = newNode;
+        else if(len == *maxLen &&  sum > *maxSum){
+            *maxSum = sum;
+        }
+        return;
     }
+    sumOfRootToLeaf(node->left, sum + node->data, len + 1, maxLen, maxSum);
+    sumOfRootToLeaf(node->right, sum + node->data, len + 1, maxLen, maxSum);
 }
-
+int sumOfLongRootToLeafPath(TreeNode *node){
+    if(node == NULL) return 0;
+    int maxSum = INT_MIN, maxLen = 0;
+    sumOfRootToLeaf(node, 0, 0, &maxLen, &maxSum);
+    return maxSum;
+}
 TreeNode* search(BinaryTree *tree, int value){
     TreeNode *temp = tree->root;
     while(temp != NULL){
@@ -61,7 +71,7 @@ TreeNode* search(BinaryTree *tree, int value){
     }
     return NULL;
 }
-
+//hàm xóa node 
 void deleteNode(BinaryTree *tree, int value){
     TreeNode *deletedNode = search(tree, value);
     //TH nếu ko có nút xóa
@@ -91,7 +101,7 @@ void deleteNode(BinaryTree *tree, int value){
     }
     //TH3: nút cần xóa chỉ có 1 nút con bên phải
     else if(curr->left == NULL && curr->right != NULL){
-        if(parent == NULL) tree->root = NULL;
+        if(parent == NULL) tree->root = curr->right;
         else if(parent->left == curr) parent->left = curr->right;
         else parent->right = curr->right;
     }
@@ -107,92 +117,42 @@ void deleteNode(BinaryTree *tree, int value){
         deletedNode->data = curr->data;
         //xóa curr
         if(parent == NULL) deletedNode->left = curr->left;
-        else parent->left = curr->left;
+        else parent->right = curr->left;
     }
     free(curr);
 }
-
-//in cây theo thứ tự duyệt trước - preorder (root - left - right) (DFS)
-void printTreePreorder(TreeNode* node) {
-    if(node == NULL) return;
-    printf("%d ", node->data);
-    printTreePreorder(node->left);
-    printTreePreorder(node->right);
-}
-//Duyet theo muc - level order (BFS)
-void levelOrder(TreeNode *node){
-    TreeNode *q[1000];
-    int head = 0, tail = -1;
-    tail++;
-    q[tail] = node;
-    printf("%d ", node->data);
-    while(head <= tail){
-        TreeNode *temp = q[head]; head++;
-        if(temp->left != NULL){
-            tail++;
-            q[tail] = temp->left;
-            printf("%d ", temp->left->data);
-        }
-        if(temp->right != NULL){
-            tail++;
-            q[tail] = temp->right;
-            printf("%d ", temp->right->data);
-        }
-    }
-}
-//Hàm cho biết các node ở level thứ k của tree
-//Dùng thuật toán DFS: Depth First Search
-void nodesAtLevelKInTree(TreeNode *node, int level, int k){
-    if(node == NULL) return;
-    if(k == level){
-        printf("%d ", node->data);
-    }
-    nodesAtLevelKInTree(node->left, level + 1, k);
-    nodesAtLevelKInTree(node->right, level + 1, k);
-}
-//3.1
-//hàm kiểm tra nút lá
-int isLeaf(TreeNode *node){
-    if(node->left == NULL && node->right == NULL) return 1;
-    else return 0;
-}
-//ham de in duong di
-void printPath(int data, int *arr){
-    if(arr[data] == data) return;
-    printPath(arr[data], arr);
-    printf("%d ", arr[data]);
-}
-//tim duong di co it phan tu nhat tu root - leaf
-void findShortestPath(TreeNode *node){
+//Xóa tất cả các số nguyên lẻ(trừ root) trên cây nhị phân nhập vào
+void deleteAllOddNumbersInTree(BinaryTree* tree) {
+    if (tree->root == NULL) return;
+    // Initialize a queue of TreeNode
     TreeNode* q[1000];
     int head = 0, tail = -1;
-    int parent[10005] = {0};
-    tail++;
-    q[tail] = node;
-    parent[node->data] = node->data;
-    TreeNode *temp = NULL;
-    int leaf = 0;
-    while(head <= tail){
-        temp = q[head];
+    if (tree->root->left != NULL) {
+        tail++;
+        q[tail] = tree->root->left;
+    }
+    if (tree->root->right != NULL) {
+        tail++;
+        q[tail] = tree->root->right;
+    }
+    while (head <= tail) {
+        TreeNode* temp = q[head];
         head++;
-        if(isLeaf(temp)){
-            leaf = temp->data;
-            break;
-        }
-        if(temp->left){
+        if (temp->left != NULL) {
             tail++;
-            q[tail] = temp->left; 
-            parent[temp->left->data] = temp->data;
+            q[tail] = temp->left;
         }
-        if(temp->right){
+        if (temp->right != NULL) {
             tail++;
             q[tail] = temp->right;
-            parent[temp->right->data] = temp->data;
         }
-    } 
-    printPath(leaf, parent);
-    printf("%d ", leaf);
+        // Check if the node contains an odd number
+        if (temp->data % 2 != 0) {
+            deleteNode(tree, temp->data);
+        }
+    }
 }
+
 //Giải phóng bộ nhớ của cây
 void freeTree(TreeNode *node){
     if(node == NULL) return;
@@ -203,22 +163,24 @@ void freeTree(TreeNode *node){
 
 int main(){
     BinaryTree tree;
-    init(&tree);   
-    tree.root = makeNode(3);
-    //cây left
-    tree.root->left = makeNode(1);
-    tree.root->left->left = makeNode(13);
-    tree.root->left->right = makeNode(5);
-    tree.root->left->right->left = makeNode(6);
-    //cây right
-    tree.root->right = makeNode(10);
-    tree.root->right->left = makeNode(11);
-    tree.root->right->right = makeNode(16);
-    tree.root->right->right->left = makeNode(15);
-    tree.root->right->right->left->left = makeNode(9);
-    tree.root->right->right->left->right = makeNode(4);
-    tree.root->right->right->right = makeNode(2);
-    levelOrder(tree.root);
+    init(&tree);
+    tree.root = makeNode(50);
+    // Left subtree
+    tree.root->left = makeNode(17);
+    tree.root->left->left = makeNode(9);
+    tree.root->left->right = makeNode(23);
+    tree.root->left->left->right = makeNode(14);
+    tree.root->left->left->right->left = makeNode(12);
+    tree.root->left->right->left = makeNode(19);
+    // Right subtree
+    tree.root->right = makeNode(76);
+    tree.root->right->left = makeNode(54);
+    tree.root->right->left->right = makeNode(72);
+    tree.root->right->left->right->left = makeNode(67);
+    printTreePreorder(tree.root);
+    printf("\n");
+    deleteAllOddNumbersInTree(&tree);
+    printTreePreorder(tree.root);
     freeTree(tree.root);
     return 0;
 }

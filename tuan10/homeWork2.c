@@ -50,15 +50,16 @@ void insert(BinaryTree *tree, int value){
     }
 }
 void deleteNode(BinaryTree *tree, int value){
+    TreeNode *deletedNode = search(tree, value);
     //TH nếu ko có nút xóa
-    if(search(tree, value) == NULL){
+    if(deletedNode == NULL){
         printf("value is not found in Binary tree!!\n");
         return;
     }
     //Tìm nút cha của nút cần xóa
     TreeNode *curr = tree->root;
     TreeNode *parent = NULL;
-    while(curr->data != value){
+    while(curr != deletedNode){
         parent = curr;
         if(parent->data > value) curr = curr->left;
         else curr = curr->right;
@@ -68,37 +69,34 @@ void deleteNode(BinaryTree *tree, int value){
         if(parent == NULL) tree->root = NULL;
         else if(parent->left == curr) parent->left = NULL;
         else parent->right = NULL;
-        free(curr);
     }
     //TH2: nút cần xóa chỉ có 1 nút con bên trái
     else if(curr->left != NULL && curr->right == NULL){
         if(parent == NULL) tree->root = curr->left;
         else if(parent->left == curr) parent->left = curr->left;
         else parent->right = curr->left;
-        free(curr);
     }
     //TH3: nút cần xóa chỉ có 1 nút con bên phải
     else if(curr->left == NULL && curr->right != NULL){
         if(parent == NULL) tree->root = NULL;
         else if(parent->left == curr) parent->left = curr->right;
         else parent->right = curr->right;
-        free(curr);
     }
     //TH4: nút cần xóa có 2 nút con
     else if(curr->left != NULL && curr->right != NULL){
         //tìm node lớn nhất bên con trái của node cần xóa -> tìm node phải nhất của con trái node cần xóa
-        curr = curr->right, parent = NULL;
-        while(curr->left != NULL){
+        curr = deletedNode->left, parent = NULL;
+        while(curr->right != NULL){
             parent = curr;
-            curr = curr->left;
+            curr = curr->right;
         }
         //Gán node cần xóa bằng node vừa tìm được
-        curr->data = curr->data;
+        deletedNode->data = curr->data;
         //xóa curr
-        if(parent == NULL) curr->right = curr->right;
-        else parent->left = curr->right;
-        free(curr);
+        if(parent == NULL) deletedNode->left = curr->left;
+        else parent->left = curr->left;
     }
+    free(curr);
 }
 
 //in cây theo thứ tự duyệt trước - preorder (root - left - right)

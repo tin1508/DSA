@@ -1,15 +1,34 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 
-typedef struct NodeType {
+//1.
+/*
+Cây nhị phân trên có lỗi sai vì: node 7 không nằm đúng vị trí, node 7 phải nằm bên nhánh trái của node 8 mới đúng vì:
+7 < 34 nên 7 sẽ nằm bên nhánh trái của 34
+7 < 10 nên 7 sẽ nằm bên nhánh trái của 10
+7 < 8 nên 7 sẽ nằm bên nhánh trái của 8
+cây nhị phân sau khi sửa xong:
+                    34
+                /       \
+              10          75
+            /   \        /
+            8    29     65
+           /     /     /  \
+          7     19    50  70
+                 \      \
+                  26     55         
+*/
+
+//2, 3
+typedef struct NodeType{
     int data;
-    struct NodeType* left, * right;
-} TreeNode;
+    struct NodeType *left, *right;
+}TreeNode;
 
-typedef struct BinaryTreeType{
-    TreeNode * root;
-} BinaryTree;
+typedef struct BinaryTreeType
+{
+    TreeNode *root;
+}BinaryTree;
 
 TreeNode* makeNode(int data){
     TreeNode *newNode = (TreeNode*)malloc(sizeof(TreeNode));
@@ -21,16 +40,6 @@ TreeNode* makeNode(int data){
 //init binarytree
 void init(BinaryTree* tree) {
     tree->root=NULL;
-}
-//Hàm tính chiều cao của cây
-int heightOfTree(TreeNode *root){
-    if(root == NULL) return -1;
-    else{
-        int lheight = heightOfTree(root->left);
-        int rheight = heightOfTree(root->right);
-        if(lheight > rheight) return (lheight + 1);
-        else return (rheight + 1);
-    }
 }
 //hàm chèn 1 node mới vào cây
 void insert(BinaryTree *tree, int value){
@@ -49,19 +58,15 @@ void insert(BinaryTree *tree, int value){
         else parent->right = newNode;
     }
 }
-
-TreeNode* search(BinaryTree *tree, int value){
+TreeNode *search(BinaryTree *tree, int value){
     TreeNode *temp = tree->root;
     while(temp != NULL){
-        if(value == temp->data){
-            return temp;
-        }
+        if(value == temp->data) return temp;
         else if(value > temp->data) temp = temp->right;
         else temp = temp->left;
     }
     return NULL;
 }
-
 void deleteNode(BinaryTree *tree, int value){
     TreeNode *deletedNode = search(tree, value);
     //TH nếu ko có nút xóa
@@ -111,87 +116,12 @@ void deleteNode(BinaryTree *tree, int value){
     }
     free(curr);
 }
-
 //in cây theo thứ tự duyệt trước - preorder (root - left - right) (DFS)
 void printTreePreorder(TreeNode* node) {
     if(node == NULL) return;
     printf("%d ", node->data);
     printTreePreorder(node->left);
     printTreePreorder(node->right);
-}
-//Duyet theo muc - level order (BFS)
-void levelOrder(TreeNode *node){
-    TreeNode *q[1000];
-    int head = 0, tail = -1;
-    tail++;
-    q[tail] = node;
-    printf("%d ", node->data);
-    while(head <= tail){
-        TreeNode *temp = q[head]; head++;
-        if(temp->left != NULL){
-            tail++;
-            q[tail] = temp->left;
-            printf("%d ", temp->left->data);
-        }
-        if(temp->right != NULL){
-            tail++;
-            q[tail] = temp->right;
-            printf("%d ", temp->right->data);
-        }
-    }
-}
-//Hàm cho biết các node ở level thứ k của tree
-//Dùng thuật toán DFS: Depth First Search
-void nodesAtLevelKInTree(TreeNode *node, int level, int k){
-    if(node == NULL) return;
-    if(k == level){
-        printf("%d ", node->data);
-    }
-    nodesAtLevelKInTree(node->left, level + 1, k);
-    nodesAtLevelKInTree(node->right, level + 1, k);
-}
-//3.1
-//hàm kiểm tra nút lá
-int isLeaf(TreeNode *node){
-    if(node->left == NULL && node->right == NULL) return 1;
-    else return 0;
-}
-//ham de in duong di
-void printPath(int data, int *arr){
-    if(arr[data] == data) return;
-    printPath(arr[data], arr);
-    printf("%d ", arr[data]);
-}
-//tim duong di co it phan tu nhat tu root - leaf
-void findShortestPath(TreeNode *node){
-    TreeNode* q[1000];
-    int head = 0, tail = -1;
-    int parent[10005] = {0};
-    tail++;
-    q[tail] = node;
-    parent[node->data] = node->data;
-    TreeNode *temp = NULL;
-    int leaf = 0;
-    while(head <= tail){
-        temp = q[head];
-        head++;
-        if(isLeaf(temp)){
-            leaf = temp->data;
-            break;
-        }
-        if(temp->left){
-            tail++;
-            q[tail] = temp->left; 
-            parent[temp->left->data] = temp->data;
-        }
-        if(temp->right){
-            tail++;
-            q[tail] = temp->right;
-            parent[temp->right->data] = temp->data;
-        }
-    } 
-    printPath(leaf, parent);
-    printf("%d ", leaf);
 }
 //Giải phóng bộ nhớ của cây
 void freeTree(TreeNode *node){
@@ -200,25 +130,22 @@ void freeTree(TreeNode *node){
     freeTree(node->right);
     free(node);
 }
-
 int main(){
     BinaryTree tree;
-    init(&tree);   
-    tree.root = makeNode(3);
-    //cây left
-    tree.root->left = makeNode(1);
-    tree.root->left->left = makeNode(13);
-    tree.root->left->right = makeNode(5);
-    tree.root->left->right->left = makeNode(6);
-    //cây right
-    tree.root->right = makeNode(10);
-    tree.root->right->left = makeNode(11);
-    tree.root->right->right = makeNode(16);
-    tree.root->right->right->left = makeNode(15);
-    tree.root->right->right->left->left = makeNode(9);
-    tree.root->right->right->left->right = makeNode(4);
-    tree.root->right->right->right = makeNode(2);
-    levelOrder(tree.root);
+    init(&tree);
+    int arr[] = {34, 10, 75, 8, 29, 65, 19, 50, 70, 7, 26, 55};
+    int size = sizeof(arr) / sizeof(int);
+    for(int i = 0; i < size; i++){
+        insert(&tree, arr[i]);
+    }
+    printTreePreorder(tree.root);
+    int value[] = {7, 50, 65};
+    int sizeValue = sizeof(value) / sizeof(int);
+    for(int i = 0; i < sizeValue; i++){
+        printf("\nXoa node %d: ", value[i]);
+        deleteNode(&tree, value[i]);
+        printTreePreorder(tree.root);
+    }
     freeTree(tree.root);
     return 0;
 }

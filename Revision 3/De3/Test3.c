@@ -97,39 +97,17 @@ void deleteNode(BinaryTree *tree, int value){
     }
     free(curr);
 }
-//Xóa tất cả các số nguyên lẻ(trừ root) trên cây nhị phân nhập vào
-// Hàm xóa tất cả các số âm (trừ root) trên cây nhị phân
 // Xóa tất cả các số nguyên âm (trừ root) trên cây nhị phân
-void deleteAllNegativeNumbersInTree(BinaryTree* tree) {
-    if (tree->root == NULL) return;
-    // Initialize a queue of TreeNode
-    TreeNode* q[1000];
-    int head = 0, tail = -1;
-    if (tree->root->left != NULL) {
-        tail++;
-        q[tail] = tree->root->left;
+void deleteAllNegativeNumbersInTree(TreeNode *node, BinaryTree *tree) {
+    if(node == NULL) return;
+    deleteAllNegativeNumbersInTree(node->left, tree);
+    deleteAllNegativeNumbersInTree(node->right, tree);
+    if(node->data < 0 && node != tree->root){
+        deleteNode(tree, node->data);
     }
-    if (tree->root->right != NULL) {
-        tail++;
-        q[tail] = tree->root->right;
-    }
-    while (head <= tail) {
-        TreeNode* temp = q[head];
-        head++;
-        if (temp->left != NULL) {
-            tail++;
-            q[tail] = temp->left;
-        }
-        if (temp->right != NULL) {
-            tail++;
-            q[tail] = temp->right;
-        }
-        // Check if the node contains a negative number
-        if ((temp->data) < 0) {
-            deleteNode(tree, temp->data);
-        }
-    }
+    return;
 }
+
 int main(){
     BinaryTree tree;
     init(&tree);
@@ -145,7 +123,7 @@ int main(){
     tree.root->right->left->right = makeNode(-1);
     printTreePreorder(tree.root);
     printf("\n");
-    deleteAllNegativeNumbersInTree(&tree);
+    deleteAllNegativeNumbersInTree(tree.root, &tree);
     printTreePreorder(tree.root);
     freeTree(tree.root);
     return 0;

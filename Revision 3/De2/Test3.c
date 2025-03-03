@@ -40,25 +40,16 @@ int heightOfTree(TreeNode *root){
         else return (rheight + 1);
     }
 }
-void sumOfRootToLeaf(TreeNode *node, int sum, int len, int *maxLen, int *maxSum){
-    if(node == NULL){
-        if(len > *maxLen){
-            *maxLen = len;
-            *maxSum = sum;
-        }
-        else if(len == *maxLen &&  sum > *maxSum){
-            *maxSum = sum;
-        }
-        return;
+//Tính tổng data nhánh dài nhất
+int sumOfLongestBranch(TreeNode *node, int *maxSum, int sum, int height, int count){
+    if(node == NULL) return *maxSum;
+    sum += node->data;
+    sumOfLongestBranch(node->left, maxSum, sum, height, count + 1);
+    sumOfLongestBranch(node->right, maxSum, sum, height, count + 1);
+    if(count == height && sum > *maxSum){
+        *maxSum = sum;
     }
-    sumOfRootToLeaf(node->left, sum + node->data, len + 1, maxLen, maxSum);
-    sumOfRootToLeaf(node->right, sum + node->data, len + 1, maxLen, maxSum);
-}
-int sumOfLongRootToLeafPath(TreeNode *node){
-    if(node == NULL) return 0;
-    int maxSum = INT_MIN, maxLen = 0;
-    sumOfRootToLeaf(node, 0, 0, &maxLen, &maxSum);
-    return maxSum;
+    return *maxSum;
 }
 TreeNode* search(BinaryTree *tree, int value){
     TreeNode *temp = tree->root;
@@ -121,36 +112,44 @@ void deleteNode(BinaryTree *tree, int value){
     }
     free(curr);
 }
+//tổng data trên nhánh nào lớn nhất
+//hàm in đường đi
+void printPath(TreeNode *node, int leaf){
+    if(node == NULL) return;
+    if(node->data == leaf){
+        printf("%d\n", node->data);
+        return;
+    }
+    printf("%d - ", node->data);
+    if(node->data > leaf) printPath(node->left, leaf);
+    else printPath(node->right, leaf);
+    return;
+}
+//Hàm kiểm tra node lá
+int isLeaf(TreeNode *node){
+    if(node->left == NULL && node->right == NULL) return 1;
+    else return 0;
+}
+void findMaxSumOnBranch(TreeNode *node, int *maxSum, int sum, int *leaf){
+    if(node == NULL) return;
+    sum += node->data;
+    findMaxSumOnBranch(node->left, maxSum, sum, leaf);
+    findMaxSumOnBranch(node->right, maxSum, sum, leaf);
+    if(isLeaf(node) && sum > *maxSum){
+        *leaf = node->data;
+        *maxSum = sum;
+    }
+    return;
+}
 //Xóa tất cả các số nguyên lẻ(trừ root) trên cây nhị phân nhập vào
-void deleteAllOddNumbersInTree(BinaryTree* tree) {
-    if (tree->root == NULL) return;
-    // Initialize a queue of TreeNode
-    TreeNode* q[1000];
-    int head = 0, tail = -1;
-    if (tree->root->left != NULL) {
-        tail++;
-        q[tail] = tree->root->left;
+void deleteAllOddNumbersInTree(TreeNode *node, BinaryTree* tree) {
+    if(node == NULL) return;
+    deleteAllOddNumbersInTree(node->left, tree);
+    deleteAllOddNumbersInTree(node->right, tree);
+    if(node->data % 2 != 0 && node != tree->root){
+        deleteNode(tree, node->data);
     }
-    if (tree->root->right != NULL) {
-        tail++;
-        q[tail] = tree->root->right;
-    }
-    while (head <= tail) {
-        TreeNode* temp = q[head];
-        head++;
-        if (temp->left != NULL) {
-            tail++;
-            q[tail] = temp->left;
-        }
-        if (temp->right != NULL) {
-            tail++;
-            q[tail] = temp->right;
-        }
-        // Check if the node contains an odd number
-        if (temp->data % 2 != 0) {
-            deleteNode(tree, temp->data);
-        }
-    }
+    return;
 }
 
 //Giải phóng bộ nhớ của cây
@@ -164,22 +163,26 @@ void freeTree(TreeNode *node){
 int main(){
     BinaryTree tree;
     init(&tree);
-    tree.root = makeNode(50);
-    // Left subtree
-    tree.root->left = makeNode(17);
-    tree.root->left->left = makeNode(9);
-    tree.root->left->right = makeNode(23);
-    tree.root->left->left->right = makeNode(14);
-    tree.root->left->left->right->left = makeNode(12);
-    tree.root->left->right->left = makeNode(19);
-    // Right subtree
-    tree.root->right = makeNode(76);
-    tree.root->right->left = makeNode(54);
-    tree.root->right->left->right = makeNode(72);
-    tree.root->right->left->right->left = makeNode(67);
+    tree.root = makeNode(15);
+    //cây left
+    tree.root->left = makeNode(10);
+    tree.root->left->left = makeNode(8);
+    tree.root->left->right = makeNode(11);
+    tree.root->left->right->right = makeNode(12);
+    tree.root->left->right->right->right = makeNode(14);
+    tree.root->left->left->left = makeNode(6);
+    tree.root->left->left->right = makeNode(9);
+    //cây right
+    tree.root->right = makeNode(18);
+    tree.root->right->left = makeNode(16);
+    tree.root->right->right = makeNode(17);
     printTreePreorder(tree.root);
     printf("\n");
-    deleteAllOddNumbersInTree(&tree);
+    int leaf = 0, maxSum = INT_MIN;
+    findMaxSumOnBranch(tree.root, &maxSum, 0, &leaf);
+    printf("largest sum: %d\n", maxSum);
+    printf("branch: ");
+    printPath(tree.root, leaf);
     printTreePreorder(tree.root);
     freeTree(tree.root);
     return 0;

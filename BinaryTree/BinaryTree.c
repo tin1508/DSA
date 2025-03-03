@@ -85,13 +85,14 @@ void deleteNode(BinaryTree *tree, int value){
     }
     //TH2: nút cần xóa chỉ có 1 nút con bên trái
     else if(curr->left != NULL && curr->right == NULL){
+
         if(parent == NULL) tree->root = curr->left;
         else if(parent->left == curr) parent->left = curr->left;
         else parent->right = curr->left;
     }
     //TH3: nút cần xóa chỉ có 1 nút con bên phải
     else if(curr->left == NULL && curr->right != NULL){
-        if(parent == NULL) tree->root = NULL;
+        if(parent == NULL) tree->root = curr->right;
         else if(parent->left == curr) parent->left = curr->right;
         else parent->right = curr->right;
     }
@@ -107,7 +108,7 @@ void deleteNode(BinaryTree *tree, int value){
         deletedNode->data = curr->data;
         //xóa curr
         if(parent == NULL) deletedNode->left = curr->left;
-        else parent->left = curr->left;
+        else parent->right = curr->left;
     }
     free(curr);
 }
@@ -204,21 +205,23 @@ void freeTree(TreeNode *node){
 int main(){
     BinaryTree tree;
     init(&tree);   
-    tree.root = makeNode(3);
+    tree.root = makeNode(15);
     //cây left
-    tree.root->left = makeNode(1);
-    tree.root->left->left = makeNode(13);
-    tree.root->left->right = makeNode(5);
-    tree.root->left->right->left = makeNode(6);
+    tree.root->left = makeNode(11);
+    tree.root->left->left = makeNode(8);
+    tree.root->left->right = makeNode(12);
+    tree.root->left->left->left = makeNode(6);
+    tree.root->left->left->right = makeNode(9);
+    tree.root->left->right->right = makeNode(14);
     //cây right
-    tree.root->right = makeNode(10);
-    tree.root->right->left = makeNode(11);
-    tree.root->right->right = makeNode(16);
-    tree.root->right->right->left = makeNode(15);
-    tree.root->right->right->left->left = makeNode(9);
-    tree.root->right->right->left->right = makeNode(4);
-    tree.root->right->right->right = makeNode(2);
-    levelOrder(tree.root);
+    tree.root->right = makeNode(26);
+    tree.root->right->left = makeNode(20);
+    tree.root->right->right = makeNode(30);
+    tree.root->right->right->right = makeNode(35);
+    printTreePreorder(tree.root);
+    deleteNode(&tree, 11);
+    printf("\n");
+    printTreePreorder(tree.root);
     freeTree(tree.root);
     return 0;
 }

@@ -214,9 +214,7 @@ int main(){
     tree.root->right->left = makeNode(54);
     tree.root->right->left->right = makeNode(72);
     tree.root->right->left->right->left = makeNode(67);
-    TreeNode *result = NULL;
-    result = nodeNearValue(tree.root, result, subtractOfNodes(&tree), INT_MAX);
-    printf("%d ", result->data);
+    findShortestPath(tree.root);
     freeTree(tree.root);
     return 0;
 }
